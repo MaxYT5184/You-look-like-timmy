@@ -149,7 +149,7 @@
 
   <div id="popup">👻 Boo! You look like Timmy!</div>
 
-  <audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
+  <audio id="bgMusic" src="music.mp3" autoplay loop></audio>
 
   <footer>Created by Andy Torres M. Get website coded for free and no payment made.</footer>
 
@@ -226,7 +226,7 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-  <script>
+  
     particlesJS("particles-js", {
       "particles": {
         "number": { "value": 80 },
@@ -248,6 +248,13 @@
       },
       "retina_detect": true
     });
+
+    <script>
+  document.addEventListener("click", () => {
+    const audio = document.getElementById("bgMusic");
+    audio.play();
+  }, { once: true });
+
   </script>
 
 </body>
