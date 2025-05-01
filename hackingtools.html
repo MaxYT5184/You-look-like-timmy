@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake Hacking Terminal</title>
+    <style>
+        body {
+            background-color: black;
+            font-family: 'Courier New', Courier, monospace;
+            color: #00FF00;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #terminal {
+            width: 80%;
+            max-width: 900px;
+            height: 80%;
+            background-color: black;
+            padding: 20px;
+            border: 2px solid #00FF00;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            color: #00FF00;
+        }
+
+        #header {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #00FF00;
+        }
+
+        #header span {
+            font-size: 1.2em;
+        }
+
+        #output {
+            flex-grow: 1;
+            padding: 10px 0;
+            overflow-y: auto;
+        }
+
+        #input-line {
+            display: flex;
+            align-items: center;
+            padding-top: 10px;
+        }
+
+        #input-line input {
+            background-color: black;
+            border: none;
+            color: #00FF00;
+            font-size: 1em;
+            width: 100%;
+        }
+
+        #footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        #footer span {
+            margin: 0;
+        }
+
+        #status {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 5px;
+            background-color: #444;
+            border-radius: 3px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .progress-bar .progress {
+            height: 100%;
+            width: 0;
+            background-color: #00FF00;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div id="terminal">
+        <div id="header">
+            <span>USER: admin</span>
+            <span id="time"></span>
+        </div>
+        <div id="output">
+            <p id="status">Initializing hacking protocol...</p>
+        </div>
+        <div id="input-line">
+            <span>></span> <input type="text" id="command-input" autocomplete="off" autofocus />
+        </div>
+        <div id="footer">
+            <span>IP: 192.168.0.1</span>
+            <span id="gps-coordinates">GPS: Fetching...</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let gpsCoordinates = document.getElementById('gps-coordinates');
+            let status = document.getElementById('status');
+            let commandInput = document.getElementById('command-input');
+            let timeDisplay = document.getElementById('time');
+            let progressBar = document.querySelector('.progress-bar');
+            let progressElement = document.getElementById('progress');
+
+            // Fake GPS Coordinates Generator
+            function getFakeCoordinates() {
+                let lat = (Math.random() * (90 - (-90)) + (-90)).toFixed(6); // Random latitude
+                let lon = (Math.random() * (180 - (-180)) + (-180)).toFixed(6); // Random longitude
+                gpsCoordinates.textContent = `GPS: ${lat}, ${lon}`;
+            }
+
+            // Fake Time Update
+            function updateTime() {
+                let currentTime = new Date();
+                timeDisplay.textContent = currentTime.toLocaleTimeString();
+            }
+
+            // Play sound
+            function playSound(type) {
+                let audio;
+                if (type === 'success') {
+                    audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
+                } else if (type === 'error') {
+                    audio = new Audio('https://www.soundjay.com/button/button-9.wav');
+                } else if (type === 'click') {
+                    audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
+                } else if (type === 'alarm') {
+                    audio = new Audio('https://www.soundjay.com/button/beep-03.wav');
+                }
+                audio.play();
+            }
+
+            // Display system info like "Hacking" messages
+            function outputToTerminal(message) {
+                let outputDiv = document.getElementById('output');
+                let newMessage = document.createElement('p');
+                newMessage.textContent = message;
+                outputDiv.appendChild(newMessage);
+                outputDiv.scrollTop = outputDiv.scrollHeight; // Auto scroll to the latest message
+            }
+
+            // Start progress bar simulation
+            function startProgress() {
+                let width = 0;
+                progressBar.style.display = 'block';
+                let interval = setInterval(() => {
+                    if (width >= 100) {
+                        clearInterval(interval);
+                        outputToTerminal('Hacking complete!');
+                        playSound('success');
+                        setTimeout(() => {
+                            outputToTerminal('Data extracted successfully!');
+                        }, 1000);
+                    } else {
+                        width++;
+                        progressElement.style.width = width + '%';
+                    }
+                }, 100);
+            }
+
+            // Fake File System and Commands
+            function fakeFiles(command) {
+                if (command === 'ls') {
+                    outputToTerminal('Documents:');
+                    outputToTerminal('system.log  user_data.txt  config.ini');
+                    outputToTerminal('Directory: /home/user/Files/');
+                    playSound('click');
+                } else if (command === 'cd user_data') {
+                    outputToTerminal('Entering /home/user/Files/user_data.txt...');
+                    playSound('click');
+                } else if (command === 'hack') {
+                    outputToTerminal('Starting hack...');
+                    startProgress();
+                } else if (command === 'decrypt user_data.txt') {
+                    outputToTerminal('Decrypting user_data.txt...');
+                    startProgress();
+                } else if (command === 'access_file user_data.txt') {
+                    outputToTerminal('Accessing user_data.txt...');
+                    playSound('click');
+                    setTimeout(() => {
+                        outputToTerminal('Password: ********');
+                        outputToTerminal('Access granted!');
+                    }, 2000);
+                } else if (command === 'send_data 192.168.0.2') {
+                    outputToTerminal('Sending data to 192.168.0.2...');
+                    playSound('click');
+                    setTimeout(() => {
+                        outputToTerminal('Data transfer complete!');
+                    }, 3000);
+                } else if (command === 'shutdown') {
+                    outputToTerminal('Shutting down system...');
+                    playSound('error');
+                    setTimeout(() => {
+                        outputToTerminal('System shutdown initiated!');
+                    }, 2000);
+                } else if (command === 'check system') {
+                    outputToTerminal('System Info:');
+                    outputToTerminal('Uptime: 3 hours');
+                    outputToTerminal('IP: 192.168.0.2');
+                    outputToTerminal('Status: Online');
+                    outputToTerminal('Checking for vulnerabilities...');
+                    setTimeout(() => outputToTerminal('Vulnerabilities found! Initiating attack...'), 1500);
+                } else {
+                    outputToTerminal(`Command not recognized: ${command}`);
+                    playSound('error');
+                }
+            }
+
+            // Handle command input
+            commandInput.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    let command = commandInput.value.trim();
+                    commandInput.value = ''; // Clear input field
+                    fakeFiles(command);
+                }
+            });
+
+            // Initialize
+            setInterval(() => {
+                getFakeCoordinates(); // Update GPS location every 3 seconds
+                updateTime(); // Update time every second
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
