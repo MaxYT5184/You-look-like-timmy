@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Stream | Dev Max</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      background: #202020;
+      width: 100%;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .logo img {
+      height: 40px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    .controls button {
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .main {
+      display: flex;
+      width: 100%;
+      height: calc(100vh - 60px);
+    }
+
+    .video-area {
+      flex: 3;
+      background: #000;
+      position: relative;
+    }
+
+    .video-feed {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .video-feed img {
+      max-width: 60%;
+    }
+
+    .chat-area {
+      flex: 1;
+      background: #181818;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+    }
+
+    .chat-message {
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .fake-users {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.5);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    .screen-capture {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: #444;
+      color: #fff;
+      padding: 5px;
+      font-size: 12px;
+    }
+
+    .channel-img {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.5);
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+
+    .channel-img img {
+      height: 50px;
+    }
+
+    .stats {
+      position: absolute;
+      top: 40px;
+      left: 10px;
+      background: rgba(0,0,0,0.5);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" alt="YouTube">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Kick.com_Logo.svg" alt="Kick" style="height:30px">
+    </div>
+    <div class="controls">
+      <button onclick="toggleMic()">🎤 Mic</button>
+      <button onclick="toggleCam()">📷 Camera</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="video-area">
+      <div class="channel-img">
+        <img src="camera.png" alt="Channel PNG">
+      </div>
+      <div class="fake-users">🧍 150 viewers</div>
+      <div class="video-feed" id="videoFeed">
+        <p>Camera is off</p>
+      </div>
+      <div class="screen-capture">🖥️ Screen Capturing...</div>
+      <div class="stats" id="stats">
+        <p>Views: <span id="views">0</span></p>
+        <p>Likes: <span id="likes">0</span></p>
+        <p>Subs: <span id="subs">0</span></p>
+      </div>
+    </div>
+    <div class="chat-area" id="chatArea">
+      <!-- Chat messages will appear here -->
+    </div>
+  </div>
+
+  <script>
+    const chatArea = document.getElementById("chatArea");
+    const messages = [
+      "Let's go!", "W stream!", "Kick better?", "Sub pls!", "First!", "OMG this is fire!",
+      "Where’s the mic?", "Mic muted?", "Turn cam on!", "Haha nice!", "This is wild!",
+      "Insane view count!", "GG!", "This game is 🔥", "Replay that!", "Cam is fake?!",
+      "Stop spamming!", "So many viewers", "Shoutout?", "Any mods here?",
+      "YouTube W", "What’s happening?!", "Lagging?", "Who else from TikTok?",
+      "L stream", "Ratio'd!", "Bro really just did that", "What is this?",
+      "How is this live?", "He’s cracked!", "Someone donate!", "100 likes now!",
+      "Camera PNG lol", "Fake stream?", "Real or fake?", "WHERE IS THE GAME",
+      "He’s cooking!", "Spam in chat!!", "Another stream joined?", "Yo what?",
+      "Can’t hear you!", "CRAZY!!", "How do I join?", "Sub goal??", "Mic delay?",
+      "This chat is nuts", "Let's get 1k viewers!", "Over 100 watching??", "Who’s here in 2025?",
+      "Imagine being here", "No cap", "Bro said WHAT?", "Clip that!", "Spam F in chat!",
+      "Mute mic again!", "PNG cam 😂", "This reminds me of 2012", "Kick better fr",
+      "Say hi to YouTube!", "Host more like ghost", "Hyped!", "Giveaway when?",
+      "He using OBS?", "No way lol", "Mute him!", "SUS!", "Is that AI talking?",
+      "Stop trolling!", "Wait what?", "How did that happen?", "This content is W",
+      "Do a flip!", "CAM ONNN", "Sheesh!!", "Camera is sus", "Mic is laggy",
+      "Yo the PNG is funny", "How you do this?", "Streaming on a potato",
+      "Free Robux??", "Fake camera??", "He disappeared!", "PNG GOAT 😂",
+      "He rage quit?", "Dude just left", "That ending tho!", "It’s looping",
+      "WHERE IS THE STREAMER", "Looks like replay", "Deja vu stream?",
+      "What’s that sound?", "CAM MISSING", "No mic detected!", "Streaming from Mars?",
+      "2 AM gang!", "I’m in the future", "It’s buffering", "404 mic not found",
+      "Keyboard ASMR?", "Too loud!!", "Chat broken", "PNG nation rise up!",
+      "He’s back!", "Caught in 4K", "No shot!", "Use real cam bro!", "This fire 🔥",
+      "Camera PNG top 10", "This setup clean", "Nice overlay", "Where he at?",
+      "Streamception", "Playing Roblox?", "Minecraft soon?", "Stream delay??",
+      "Just vibin", "Music on point", "Who else bored?", "Spam hearts 💖",
+      "Give mod pls", "W chat", "Peak stream rn", "Game audio low",
+      "Using OBS Studio?", "Nice background", "How to donate?", "He’s afk",
+      "This stream looping?", "Bros using AI", "Stream goal?", "Cam broke",
+      "Who came from Discord?", "This fake huh", "Epic fail!", "Wait rewind!",
+      "Crispy mic 😂", "Chat's wild rn", "Mic on point", "Using voice changer?",
+      "Imagine no cam", "Stream crashed?", "Chat exploding", "Say hi pls!",
+      "PNG man!", "Mic better now", "This funny lol", "Viewer boost??",
+      "Say something bro", "React to comments", "Host vanished?", "Great overlay",
+      "No gameplay?", "Music loud", "W overlay!", "When giveaway?",
+      "Fake mic 😂", "Playing Valorant?", "Nice lighting!", "Subbed ✅",
+      "Mobile stream?", "PNG cam OP", "So fake it’s funny", "F in the chat!",
+      "Bro just vanished", "Where’s gameplay", "Spam W!!!", "Camera gone",
+      "YouTube vs Kick", "Nice effects!", "PNG master", "Make it louder!",
+      "WHERE IS HE", "Restart pls", "Pause stream?", "Good audio finally",
+      "PNG nation!", "PNG attack!!", "Streaming on dial-up?", "This wild!",
+      "Stop PNG trolling!", "Who made this?!", "He’s back again?!",
+      "Fake delay 😂", "Still live?", "Backrooms stream?", "Random AF lol",
+      "PNG takeover!", "Shhh quiet!", "Add sound effects!", "This better than Netflix", "True entertainment 😂",
+      "Ultimate PNG stream", "Chat is elite", "Why so funny?", "W PNG use",
+      "Legend!", "Mic W", "Obsessed with PNG", "Mic echoing", "Best stream today",
+      "Spam faster!", "Fake fans exposed", "Bots in chat?", "Speedrun stream!",
+      "Streamer asleep?", "Chat AI too?", "Mute that man!", "Fake rage!",
+      "He using green screen?", "Where's the rage cam?", "Streamer vanished!",
+      "RIP chat", "10/10 PNG usage", "Meme stream 😂"
+    ];
+
+    let views = 0;
+    let likes = 0;
+    let subs = 0;
+
+    // Update view count, likes, and subs slowly
+    function updateStats() {
+      views += Math.floor(Math.random() * 5) + 1;
+      likes += Math.floor(Math.random() * 3) + 1;
+      subs += Math.floor(Math.random() * 2) + 1;
+
+      document.getElementById("views").textContent = views.toLocaleString();
+      document.getElementById("likes").textContent = likes.toLocaleString();
+      document.getElementById("subs").textContent = subs.toLocaleString();
+    }
+
+    setInterval(updateStats, 2000); // Update every 2 seconds (can adjust speed)
+
+    function addFakeMessage() {
+      const msg = document.createElement("div");
+      msg.classList.add("chat-message");
+      const username = `user${Math.floor(Math.random() * 10000)}`;
+      const content = messages[Math.floor(Math.random() * messages.length)];
+      msg.textContent = `${username}: ${content}`;
+      chatArea.appendChild(msg);
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    setInterval(addFakeMessage, 250); // Adjust speed here (lower = faster)
+
+    let micOn = true;
+    let camOn = false;
+
+    function toggleMic() {
+      micOn = !micOn;
+      alert(`Mic is now ${micOn ? "ON" : "OFF"}`);
+    }
+
+    function toggleCam() {
+      camOn = !camOn;
+      document.getElementById("videoFeed").innerHTML = camOn ? "<p>Camera is ON</p>" : "<p>Camera is OFF</p>";
+    }
+
+  </script>
+</body>
+</html>
