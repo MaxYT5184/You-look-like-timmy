@@ -67,7 +67,6 @@
       text-shadow: 2px 2px 10px #000;
     }
 
-    /* Sidebar Chat */
     #chat {
       display: none;
       position: fixed;
@@ -75,12 +74,13 @@
       top: 0;
       width: 300px;
       height: 100%;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.8);
       color: white;
       overflow-y: auto;
       padding: 20px;
       box-shadow: -5px 0 15px rgba(0,0,0,0.3);
       z-index: 2;
+      font-size: 0.9em;
     }
 
     .message {
@@ -88,12 +88,49 @@
       padding: 10px 15px;
       border-radius: 10px;
       margin-bottom: 10px;
-      animation: fadeInChat 0.6s ease-in-out forwards;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: fadeInChat 0.3s ease-in-out forwards;
+    }
+
+    .message img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .username {
+      font-weight: bold;
+      color: #00ffff;
     }
 
     @keyframes fadeInChat {
       0% { opacity: 0; transform: translateX(50px); }
       100% { opacity: 1; transform: translateX(0); }
+    }
+
+    #popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #111;
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      z-index: 999;
+      font-size: 1.5em;
+      box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+    }
+
+    footer {
+      position: fixed;
+      bottom: 10px;
+      text-align: center;
+      width: 100%;
+      color: #ccc;
+      font-size: 0.8em;
     }
   </style>
 </head>
@@ -110,57 +147,84 @@
 
   <div id="chat"></div>
 
+  <div id="popup">👻 Boo! You look like Timmy!</div>
+
+  <audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
+
+  <footer>Created by Andy Torres M. Get website coded for free and no payment made.</footer>
+
   <script>
     let count = 10;
     const countdownEl = document.getElementById("countdown");
     const contentEl = document.getElementById("content");
     const chatEl = document.getElementById("chat");
+    const popup = document.getElementById("popup");
+    const music = document.getElementById("bgMusic");
 
-    const interval = setInterval(() => {
+    const usernames = [
+      { name: "TwitchGuy123", icon: "https://upload.wikimedia.org/wikipedia/commons/2/26/Twitch_logo.svg" },
+      { name: "YTLegend", icon: "https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" },
+      { name: "GamerQueen", icon: "https://upload.wikimedia.org/wikipedia/commons/2/26/Twitch_logo.svg" },
+      { name: "MrFunnyYT", icon: "https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" },
+    ];
+
+    const messages = [
+      "LOL 😂", "Nah that’s crazy!", "Bro really said that?", "Timmy moment fr",
+      "💀💀💀", "No way... 😭", "This got me cryin'", "Certified Timmy behavior",
+      "This man wild 😭", "I'm done 💀", "BRUH", "Stream is wild rn!",
+      "I’m wheezing 😭", "CLIP THAT", "Send help 😂", "Nooo wayy",
+    ];
+
+    let countInterval = setInterval(() => {
       count--;
       countdownEl.style.animation = 'none';
       void countdownEl.offsetWidth;
       countdownEl.style.animation = 'flip 0.5s ease-in-out';
       countdownEl.textContent = count;
       if (count === 0) {
-        clearInterval(interval);
+        clearInterval(countInterval);
         countdownEl.style.display = 'none';
         contentEl.style.display = 'block';
         chatEl.style.display = 'block';
+        document.body.style.background = "#000"; // dark mode
+        music.play();
         startFakeChat();
+        showPopup();
       }
     }, 1000);
 
-    const messages = [
-      "LOL 😂",
-      "Nah that’s crazy!",
-      "Bro really said that?",
-      "Timmy moment fr",
-      "💀💀💀",
-      "No way... 😭",
-      "This got me cryin'",
-      "Certified Timmy behavior",
-      "This man wild 😭",
-      "I'm done 💀"
-    ];
-
     function startFakeChat() {
-      let i = 0;
-      const chatInterval = setInterval(() => {
-        if (i >= messages.length) {
-          clearInterval(chatInterval);
-          return;
-        }
-        const msg = document.createElement("div");
-        msg.className = "message";
-        msg.textContent = messages[i++];
-        chatEl.appendChild(msg);
+      setInterval(() => {
+        const randomUser = usernames[Math.floor(Math.random() * usernames.length)];
+        const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+
+        const msgDiv = document.createElement("div");
+        msgDiv.className = "message";
+
+        const icon = document.createElement("img");
+        icon.src = randomUser.icon;
+
+        const userSpan = document.createElement("span");
+        userSpan.className = "username";
+        userSpan.textContent = randomUser.name + ": ";
+
+        const textNode = document.createTextNode(randomMsg);
+
+        msgDiv.appendChild(icon);
+        msgDiv.appendChild(userSpan);
+        msgDiv.appendChild(textNode);
+
+        chatEl.appendChild(msgDiv);
         chatEl.scrollTop = chatEl.scrollHeight;
-      }, 1500);
+      }, 200); // fast spam
+    }
+
+    function showPopup() {
+      popup.style.display = "block";
+      setTimeout(() => popup.style.display = "none", 4000);
     }
   </script>
 
-  <!-- Particles background -->
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script>
     particlesJS("particles-js", {
